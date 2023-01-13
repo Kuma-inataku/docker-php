@@ -6,5 +6,4 @@ RUN apt-get update && apt-get install -y libonig-dev && \
 # xdebug install
 RUN pecl install xdebug \
   && docker-php-ext-enable xdebug
-
-RUN echo "pulled!!!"
+  
