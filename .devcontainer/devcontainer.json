@@ -8,11 +8,7 @@
     "forwardPorts": [                   // xdebug.iniに書いたport番号と同じにする
         9003
     ],
-    "extensions": [                     // コンテナ内で使用したい拡張機能、お好みに合わせて設定してください。
-        "felixfbecker.php-debug",
-        "coenraads.bracket-pair-colorizer-2",
-        "oderwat.indent-rainbow",
-        "streetsidesoftware.code-spell-checker",
-        "mosapride.zenkaku"
-    ]
+    "extensions": [
+		"xdebug.php-debug",
+	]
 }
