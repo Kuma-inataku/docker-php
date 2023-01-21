@@ -1,15 +1,6 @@
 version: '3'
 services:
   # #postgresql用コンテナ
-  # postgresql:
-  #   container_name: postgresql
-  #   image: postgresql:15.1
-  #   volumes:
-  #     - ./postgresql:/var/lib/postgresql/data
-  #   ports:
-  #     - 5432:5432
-  #   environment:
-  #     - POSTGRES_PASSWORD=password
   postgres:
     # Docker Image は postgres:12-alpine を使います。postgres:12-alpine は postgres:12 と比較して、イメージサイズが小さくなっています。
     image: postgres:12-alpine
