@@ -1,2 +1,5 @@
 php.ini
 xdebug.ini
+postgresql
+.devcontainer
+schemaspy.properties
