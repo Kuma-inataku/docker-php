@@ -1,20 +1,32 @@
 version: '3'
 services:
-
-  # #MySQL用コンテナ
-  # mysql:
-  #   container_name: mysql
-  #   image: mysql:5.7
+  # #postgresql用コンテナ
+  # postgresql:
+  #   container_name: postgresql
+  #   image: postgresql:15.1
   #   volumes:
-  #     - ./mysql:/var/lib/mysql
+  #     - ./postgresql:/var/lib/postgresql/data
   #   ports:
-  #     - 3306:3306
+  #     - 5432:5432
   #   environment:
-  #     - MYSQL_ROOT_PASSWORD=root
-  #     - MYSQL_DATABASE=test
-  #     - MYSQL_USER=test
-  #     - MYSQL_PASSWORD=test
-
+  #     - POSTGRES_PASSWORD=password
+  postgres:
+    # Docker Image は postgres:12-alpine を使います。postgres:12-alpine は postgres:12 と比較して、イメージサイズが小さくなっています。
+    image: postgres:12-alpine
+    # コンテナの名前を指定します。
+    container_name: postgres
+    # 環境変数を設定します。
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=mydb
+    # データの永続化
+    volumes:
+      # postgresディレクトリを/var/lib/postgresql/dataにマウントする
+      - postgres:/var/lib/postgresql/data
+    # ポートの指定（HOST:CONTAINER）
+    ports:
+      - 5432:5432
   # #phpMyAdmin用コンテナ
   # phpmyadmin:
   #   container_name: phpMyAdmin
@@ -39,3 +51,6 @@ services:
       - "host.docker.internal:host-gateway"
     # depends_on:
     #   - mysql
+# データの永続化
+volumes:
+  postgres:
