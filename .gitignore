@@ -3,3 +3,4 @@ xdebug.ini
 postgresql
 .devcontainer
 schemaspy.properties
+output

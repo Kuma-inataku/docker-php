@@ -8,9 +8,9 @@ services:
     container_name: postgres
     # 環境変数を設定します。
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=mydb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
     # データの永続化
     volumes:
       # postgresディレクトリを/var/lib/postgresql/dataにマウントする
@@ -36,6 +36,7 @@ services:
     build: ./php
     volumes:
       - ./html:/var/www/html
+      - ./output:/var/www/html/output
     ports:
       - 8080:80
     extra_hosts:

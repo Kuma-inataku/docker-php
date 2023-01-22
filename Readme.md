@@ -43,3 +43,9 @@ Failed to connect to database URL [jdbc:postgresql://localhost:5432/postgresql] 
 INFO  - StackTraces have been omitted, use `-debug` when executing SchemaSpy to see them
 ```
 - 「`jdbc:postgresql://localhost:5432/postgresql`への接続に失敗。hostnameかportが正しいこととpostmasterの設定でTCP/IP接続を許可しているか確認してね」とのこと。
+- 実行するコマンドを変更したら一応htmlは作れた
+  - が, mydbの結果を出力した&homeディレクトリにいろんなデータが作られるのでディレクトリが汚れる
+  - コンテナ作成時の設定ミスかな（ほしい情報はdb: postgres）
+```
+docker run -v "$PWD/output:/output" --net="host" -v "$PWD/schemaspy/schemaspy.properties:/schemaspy.properties" schemaspy/schemaspy:snapshot -all;
+```
