@@ -95,3 +95,71 @@ INFO  - StackTraces have been omitted, use `-debug` when executing SchemaSpy to 
 ```
 sudo chmod 777 output
 ```
+
+### `No tables or views were found in schema 'public'`になる
+```
+inataku@Takuya1790:~/docker-php$ docker run -v "$PWD/output:/output" --net="docker-php_default" -v "$PWD/schemaspy/schemaspy.properties:/schemaspy.properties" -v "$PWD/schemaspy/pgsql11.properties:/pgsql11.properties" schemaspy/schemaspy:snapshot
+Using drivers:jtds-1.3.1.jar, mariadb-java-client-1.1.10.jar
+mysql-connector-java-8.0.28.jar, postgresql-42.3.5.jar
+  ____       _                          ____
+ / ___|  ___| |__   ___ _ __ ___   __ _/ ___| _ __  _   _
+ \___ \ / __| '_ \ / _ \ '_ ` _ \ / _` \___ \| '_ \| | | |
+  ___) | (__| | | |  __/ | | | | | (_| |___) | |_) | |_| |
+ |____/ \___|_| |_|\___|_| |_| |_|\__,_|____/| .__/ \__, |
+                                             |_|    |___/
+
+                                              6.1.1-SNAPSHOT
+
+SchemaSpy generates an HTML representation of a database schema's relationships.
+SchemaSpy comes with ABSOLUTELY NO WARRANTY.
+SchemaSpy is free software and can be redistributed under the conditions of LGPL version 3 or later.
+http://www.gnu.org/licenses/
+
+INFO  - Starting Main v6.1.1-SNAPSHOT on 73123869a28d with PID 1 (/usr/local/lib/schemaspy/schemaspy-6.1.1-SNAPSHOT.jar started by java in /)
+INFO  - The following profiles are active: default
+INFO  - Found configuration file: schemaspy.properties
+INFO  - Started Main in 1.718 seconds (JVM running for 2.78)
+INFO  - Loaded configuration from schemaspy.properties
+INFO  - Starting schema analysis
+INFO  - Connected to PostgreSQL - 12.13
+INFO  - Gathering schema details
+Gathering schema details...WARN  - Failed to retrieve stored procedure/function details using sql 'select r.routine_name || '(' || oidvectortypes(p.proargtypes) || ')' as routine_name, case when p.proisagg then 'AGGREGATE' else 'FUNCTION' end as routine_type, case when p.proretset then 'SETOF ' else '' end || case when r.data_type = 'USER-DEFINED' then r.type_udt_name else r.data_type end as dtd_identifier, r.external_language as routine_body,r.routine_definition, r.sql_data_access, r.security_type, r.is_deterministic, d.description as routine_comment from information_schema.routines r left join pg_namespace ns on r.routine_schema = ns.nspname left join pg_proc p on r.specific_name = p.proname || '_' || p.oid left join pg_description d on d.objoid = p.oid where r.routine_schema = :schema'
+ERROR: column p.proisagg does not exist
+  Hint: Perhaps you meant to reference the column "p.prolang".
+  Position: 97
+(2sec)
+Connecting relationships...WARN  - No tables or views were found in schema 'public'.
+ERROR - The schema exists in the database, but the user you specified 'root'might not have rights to read its contents.
+ERROR - Another possibility is that the regular expression that you specified for what to include (via -i) didn't match any tables.
+WARN  - Empty schema
+null
+INFO  - StackTraces have been omitted, use `-debug` when executing SchemaSpy to see them
+```
+- `schemaspy/schemaspy.properties`の`schemaspy.u`で指定したユーザーが持つテーブルが存在しないため
+  - 対応: postgresコンテナに対して`bin/bash`してテーブル作成
+```
+# postgres コンテナに入る
+inataku@Takuya1790:~/docker-php$ docker exec -it postgres /bin/bash
+
+# postgresログイン
+ab6180e39470:/# psql -U ユーザー名(=schemaspy.u) -d mydb(=schemaspy.db)
+psql (12.13)
+Type "help" for help.
+
+# テーブル確認->テーブルがない...
+mydb=# \dt
+Did not find any relations.
+
+# テーブル作成
+mydb=# create table mybook2 (id integer, name varchar(10));
+CREATE TABLE
+
+# テーブル確認
+mydb=# \dt
+        List of relations
+ Schema |  Name   | Type  | Owner
+--------+---------+-------+-------
+ public | mybook2 | table | ****(ユーザー名)
+(1 row)
+```
+- もう一度schemaspyを実行すると出力先(今回は`output/`直下)に色々とファイルが準備される
