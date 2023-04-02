@@ -163,3 +163,19 @@ mydb=# \dt
 (1 row)
 ```
 - もう一度schemaspyを実行すると出力先(今回は`output/`直下)に色々とファイルが準備される
+
+### 補足: `ERROR: column p.proisagg does not exist`について
+```
+inataku@Takuya1790:~/docker-php$ docker run -v "$PWD/output:/output" --net="docker-php_default" -v "$PWD/schemaspy/schemaspy.properties:/schemaspy.properties" schemaspy/schemaspy:snapshot
+Using drivers:jtds-1.3.1.jar, mariadb-java-client-1.1.10.jar
+mysql-connector-java-8.0.28.jar, postgresql-42.3.5.jar
+...
+Gathering schema details....WARN  - Failed to retrieve stored procedure/function details using sql 'select r.routine_name || '(' || oidvectortypes(p.proargtypes) || ')' as routine_name, case when p.proisagg then 'AGGREGATE' else 'FUNCTION' end as routine_type, case when p.proretset then 'SETOF ' else '' end || case when r.data_type = 'USER-DEFINED' then r.type_udt_name else r.data_type end as dtd_identifier, r.external_language as routine_body,r.routine_definition, r.sql_data_access, r.security_type, r.is_deterministic, d.description as routine_comment from information_schema.routines r left join pg_namespace ns on r.routine_schema = ns.nspname left join pg_proc p on r.specific_name = p.proname || '_' || p.oid left join pg_description d on d.objoid = p.oid where r.routine_schema = :schema'
+ERROR: column p.proisagg does not exist
+  Hint: Perhaps you meant to reference the column "p.prolang".
+  Position: 97
+(2sec)
+...
+```
+- エラーは起きているがER図の出力に特に支障はなし
+  - https://github.com/schemaspy/schemaspy/issues/470 issueも挙がっているがpostgres ver.11 以前のバグとの記載もあるが今回僕が使っているのはver.12。よくわからんので放置
