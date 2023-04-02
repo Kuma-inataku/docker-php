@@ -1,3 +1,8 @@
+# 環境
+- WSL2
+- Docker
+- Apache(php:apache)
+- PHP(php:8.2.1)
 
 ## 参考先
 - https://idealump.com/service/lab/95
