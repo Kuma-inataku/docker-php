@@ -7,6 +7,6 @@
 </head>
 <body>
     <h1><?= 'Docker test' ?></h1>
-    <?= phpinfo() ?>
+    <?= 'Hello!!' ?>
 </body>
 </html>
