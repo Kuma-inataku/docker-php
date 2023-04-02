@@ -36,6 +36,7 @@ services:
     build: ./php
     volumes:
       - ./:/var/www/
+      - ./output:/var/www/html/output
     ports:
       - 8080:80
     extra_hosts:
