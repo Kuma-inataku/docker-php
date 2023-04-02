@@ -1,6 +1,6 @@
 php.ini
 xdebug.ini
-postgresql
+.postgresql
 .devcontainer
 schemaspy.properties
 output
