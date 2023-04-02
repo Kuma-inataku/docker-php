@@ -18,7 +18,7 @@ services:
     # ポートの指定（HOST:CONTAINER）
     ports:
       - 5432:5432
-    # #phpMyAdmin用コンテナ
+    # # phpMyAdmin用コンテナ
     # phpmyadmin:
     #   container_name: phpMyAdmin
     #   depends_on:
@@ -35,8 +35,7 @@ services:
     container_name: php-apache
     build: ./php
     volumes:
-      - ./html:/var/www/html
-      - ./output:/var/www/html/output
+      - ./:/var/www/
     ports:
       - 8080:80
     extra_hosts:
