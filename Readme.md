@@ -13,9 +13,10 @@
 http://localhost:8080/
 
 # schema spy使用
-## 直面したエラー
+## メモ
+### `Connection to localhost:5432 refused`になる
 ```
-inataku@Takuya1790:~/docker-php$ docker run -v "$PWD:/output" -v "$PWD/schemaspy/schemaspy.properties:/schemaspy.properties" schemaspy/schemaspy:snapshot;
+inataku@Takuya1790:~/docker-php$ docker run -v "$PWD/output:/output" --net="docker-php_default" -v "$PWD/schemaspy/schemaspy.properties:/schemaspy.properties" schemaspy/schemaspy:snapshot
 Using drivers:jtds-1.3.1.jar, mariadb-java-client-1.1.10.jar
 mysql-connector-java-8.0.28.jar, postgresql-42.3.5.jar
   ____       _                          ____
@@ -32,20 +33,24 @@ SchemaSpy comes with ABSOLUTELY NO WARRANTY.
 SchemaSpy is free software and can be redistributed under the conditions of LGPL version 3 or later.
 http://www.gnu.org/licenses/
 
-INFO  - Starting Main v6.1.1-SNAPSHOT on b609f1202767 with PID 1 (/usr/local/lib/schemaspy/schemaspy-6.1.1-SNAPSHOT.jar started by java in /)
+INFO  - Starting Main v6.1.1-SNAPSHOT on ac035303fcff with PID 1 (/usr/local/lib/schemaspy/schemaspy-6.1.1-SNAPSHOT.jar started by java in /)
 INFO  - The following profiles are active: default
 INFO  - Found configuration file: schemaspy.properties
-INFO  - Started Main in 1.428 seconds (JVM running for 2.141)
+INFO  - Started Main in 1.817 seconds (JVM running for 2.757)
 INFO  - Loaded configuration from schemaspy.properties
 INFO  - Starting schema analysis
 WARN  - Connection Failure
-Failed to connect to database URL [jdbc:postgresql://localhost:5432/postgresql] Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+Failed to connect to database URL [jdbc:postgresql://localhost:5432/mydb] Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
 INFO  - StackTraces have been omitted, use `-debug` when executing SchemaSpy to see them
 ```
-- 「`jdbc:postgresql://localhost:5432/postgresql`への接続に失敗。hostnameかportが正しいこととpostmasterの設定でTCP/IP接続を許可しているか確認してね」とのこと。
-- 実行するコマンドを変更したら一応htmlは作れた
-  - が, mydbの結果を出力した&homeディレクトリにいろんなデータが作られるのでディレクトリが汚れる
-  - コンテナ作成時の設定ミスかな（ほしい情報はdb: postgres）
+- `Connection to localhost:5432 refused.`なので「`localhost:5432`への接続に失敗」とのこと。
+- netstatを見てもpostgresのポート5432は動いているのになんで？
 ```
-docker run -v "$PWD/output:/output" --net="host" -v "$PWD/schemaspy/schemaspy.properties:/schemaspy.properties" schemaspy/schemaspy:snapshot -all;
+inataku@Takuya1790:~/docker-php$ NETSTAT.EXE -an | grep 5432
+  TCP    0.0.0.0:5432           0.0.0.0:0              LISTENING
+  TCP    [::]:5432              [::]:0                 LISTENING
+  TCP    [::1]:5432             [::]:0                 LISTENING
 ```
+- [こちら](https://zenn.dev/ryo_t/articles/3be7a5ca39d496)で解決。
+  - 確かにDockerコンテナ上のpostgresはlocalhost(hostOS上)ではないな。。。
+  - 
